@@ -1,0 +1,2897 @@
+{% extends "base.html" %}
+
+{% block title %}Movies | Prime Media{% endblock %}
+
+{% block style %}
+<style>
+
+/* =========================================================
+   PRIME MEDIA — MOVIES
+   IMPORTANT:
+   Everything is scoped to .movies-page so this page does
+   NOT interfere with the header/footer inherited from base.
+========================================================= */
+
+.movies-page {
+    --bg: #080808;
+    --surface: #101010;
+    --surface-2: #161616;
+    --cream: #f3efe6;
+    --text: #f7f4ed;
+    --muted: #9b9891;
+    --gold: #d5a84d;
+    --border: rgba(255,255,255,.12);
+
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+}
+
+.movies-page,
+.movies-page * {
+    box-sizing: border-box;
+}
+
+.movies-page img {
+    display: block;
+    max-width: 100%;
+}
+
+.movies-page button,
+.movies-page input,
+.movies-page select {
+    font: inherit;
+}
+
+.movies-page button {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.movies-page .cinema-hero {
+    min-height: 88vh;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+.movies-page .cinema-hero__image {
+    position: absolute;
+    inset: 0;
+    z-index: -4;
+
+    background:
+        url("https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg")
+        center 30% / cover no-repeat;
+
+    transform: scale(1.03);
+    animation: heroZoom 14s ease-out forwards;
+}
+
+@keyframes heroZoom {
+    from {
+        transform: scale(1.08);
+    }
+
+    to {
+        transform: scale(1.03);
+    }
+}
+
+.movies-page .cinema-hero__shade {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.96) 0%,
+            rgba(0,0,0,.78) 32%,
+            rgba(0,0,0,.38) 65%,
+            rgba(0,0,0,.15) 100%
+        );
+}
+
+.movies-page .cinema-hero__bottom {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+
+    background:
+        linear-gradient(
+            0deg,
+            #080808 0%,
+            rgba(8,8,8,.88) 8%,
+            rgba(8,8,8,.15) 45%,
+            transparent 70%
+        );
+}
+
+.movies-page .cinema-hero__grain {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: .08;
+    pointer-events: none;
+
+    background-image:
+        repeating-radial-gradient(
+            circle at 0 0,
+            transparent 0,
+            rgba(255,255,255,.2) 1px,
+            transparent 2px
+        );
+
+    background-size: 6px 6px;
+}
+
+.movies-page .cinema-hero__inner {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding:
+        100px
+        max(6vw, 30px)
+        90px;
+}
+
+.movies-page .cinema-hero__content {
+    width: min(760px, 100%);
+}
+
+.movies-page .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    margin-bottom: 25px;
+
+    color: var(--gold);
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+}
+
+.movies-page .eyebrow::before {
+    content: "";
+    width: 42px;
+    height: 1px;
+    background: var(--gold);
+}
+
+.movies-page .cinema-hero h1 {
+    margin: 0;
+
+    font-size: clamp(58px, 8vw, 120px);
+    line-height: .84;
+    letter-spacing: -6px;
+    font-weight: 900;
+}
+
+.movies-page .cinema-hero h1 span {
+    display: block;
+
+    color: transparent;
+
+    -webkit-text-stroke:
+        1px rgba(255,255,255,.72);
+}
+
+.movies-page .hero-copy {
+    max-width: 560px;
+
+    margin: 30px 0 22px;
+
+    color: rgba(255,255,255,.72);
+
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.movies-page .hero-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    margin-bottom: 32px;
+
+    color: #d1d1d1;
+
+    font-size: 13px;
+}
+
+.movies-page .hero-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.movies-page .hero-meta .hero-rating {
+    color: var(--gold);
+    font-weight: 800;
+}
+
+.movies-page .hero-meta .meta-dot::before {
+    content: "";
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #777;
+    display: inline-block;
+    margin-right: 16px;
+}
+
+.movies-page .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.movies-page .primary-movie-btn,
+.movies-page .secondary-movie-btn {
+    min-height: 52px;
+
+    border-radius: 2px;
+
+    padding: 0 25px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    border: 0;
+
+    font-weight: 800;
+
+    transition:
+        transform .25s ease,
+        background .25s ease;
+}
+
+.movies-page .primary-movie-btn {
+    background: var(--cream);
+    color: #080808;
+}
+
+.movies-page .primary-movie-btn:hover {
+    background: var(--gold);
+    transform: translateY(-3px);
+}
+
+.movies-page .secondary-movie-btn {
+    color: white;
+
+    background:
+        rgba(255,255,255,.10);
+
+    border:
+        1px solid rgba(255,255,255,.18);
+
+    backdrop-filter: blur(10px);
+}
+
+.movies-page .secondary-movie-btn:hover {
+    background:
+        rgba(255,255,255,.18);
+}
+
+.movies-page .hero-index {
+    position: absolute;
+    right: max(5vw, 30px);
+    bottom: 90px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    color: rgba(255,255,255,.65);
+}
+
+.movies-page .hero-index strong {
+    font-size: 38px;
+    color: white;
+}
+
+.movies-page .hero-index div {
+    width: 65px;
+    height: 1px;
+    background: rgba(255,255,255,.4);
+}
+
+.movies-page .hero-index span {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   SECTION SYSTEM
+========================================================= */
+
+.movies-page .movie-section {
+    padding:
+        105px
+        max(6vw, 30px);
+}
+
+.movies-page .section-inner {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.movies-page .section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 50px;
+
+    margin-bottom: 48px;
+}
+
+.movies-page .section-kicker {
+    display: block;
+
+    margin-bottom: 13px;
+
+    color: var(--gold);
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.movies-page .section-heading h2 {
+    margin: 0;
+
+    font-size: clamp(40px, 5vw, 70px);
+    line-height: .95;
+    letter-spacing: -3px;
+}
+
+.movies-page .section-heading > p {
+    max-width: 420px;
+
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+
+/* =========================================================
+   DISCOVER
+========================================================= */
+
+.movies-page .discover-section {
+    padding-bottom: 55px;
+}
+
+.movies-page .discover-panel {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    align-items: center;
+    gap: 25px;
+
+    padding: 22px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+}
+
+.movies-page .movie-search {
+    min-height: 58px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 0 18px;
+
+    background: #090909;
+
+    border: 1px solid var(--border);
+}
+
+.movies-page .movie-search svg {
+    width: 21px;
+    height: 21px;
+
+    fill: none;
+    stroke: #777;
+    stroke-width: 1.7;
+}
+
+.movies-page .movie-search input {
+    width: 100%;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+    color: white;
+
+    font-size: 15px;
+}
+
+.movies-page .movie-search input::placeholder {
+    color: #656565;
+}
+
+.movies-page .filter-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.movies-page .genre-button {
+    min-height: 40px;
+
+    padding: 0 15px;
+
+    border-radius: 30px;
+
+    border: 1px solid var(--border);
+
+    background: transparent;
+
+    color: #888;
+
+    font-size: 12px;
+
+    transition: .2s ease;
+}
+
+.movies-page .genre-button:hover,
+.movies-page .genre-button.active {
+    background: var(--cream);
+    border-color: var(--cream);
+    color: #080808;
+}
+
+
+/* =========================================================
+   TRENDING
+========================================================= */
+
+.movies-page .trending-section {
+    padding-top: 60px;
+}
+
+.movies-page .trending-heading-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.movies-page .slider-arrow {
+    width: 48px;
+    height: 48px;
+
+    border: 1px solid var(--border);
+
+    background: transparent;
+    color: white;
+
+    font-size: 19px;
+
+    transition: .25s ease;
+}
+
+.movies-page .slider-arrow:hover {
+    background: white;
+    color: black;
+}
+
+.movies-page .trending-track {
+    display: grid;
+
+    grid-auto-flow: column;
+    grid-auto-columns:
+        minmax(240px, 19%);
+
+    gap: 18px;
+
+    overflow-x: auto;
+
+    scroll-behavior: smooth;
+
+    padding-bottom: 25px;
+
+    scrollbar-width: none;
+}
+
+.movies-page .trending-track::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* =========================================================
+   MOVIE CARD
+========================================================= */
+
+.movies-page .cinema-card {
+    min-width: 0;
+}
+
+.movies-page .poster-wrap {
+    position: relative;
+
+    aspect-ratio: 2 / 3;
+
+    overflow: hidden;
+
+    background: #141414;
+}
+
+.movies-page .poster-wrap::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            0deg,
+            rgba(0,0,0,.72),
+            transparent 45%
+        );
+
+    pointer-events: none;
+}
+
+.movies-page .poster-wrap img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform .55s cubic-bezier(.2,.8,.2,1),
+        filter .4s ease;
+}
+
+.movies-page .cinema-card:hover
+.poster-wrap img {
+    transform: scale(1.07);
+    filter: brightness(.62);
+}
+
+.movies-page .rank-number {
+    position: absolute;
+    left: 14px;
+    top: 10px;
+
+    z-index: 3;
+
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -2px;
+
+    color: white;
+
+    text-shadow:
+        0 5px 20px rgba(0,0,0,.8);
+}
+
+.movies-page .card-play {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    z-index: 5;
+
+    width: 58px;
+    height: 58px;
+
+    transform:
+        translate(-50%, -40%)
+        scale(.85);
+
+    border: 0;
+    border-radius: 50%;
+
+    background: var(--cream);
+    color: black;
+
+    font-size: 18px;
+
+    opacity: 0;
+
+    transition: .3s ease;
+}
+
+.movies-page .cinema-card:hover
+.card-play {
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+}
+
+.movies-page .save-movie {
+    position: absolute;
+
+    right: 13px;
+    top: 13px;
+
+    z-index: 6;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(255,255,255,.25);
+
+    background:
+        rgba(0,0,0,.45);
+
+    color: white;
+
+    backdrop-filter: blur(8px);
+
+    opacity: 0;
+
+    transition: .3s ease;
+}
+
+.movies-page .cinema-card:hover
+.save-movie {
+    opacity: 1;
+}
+
+.movies-page .save-movie.saved {
+    opacity: 1;
+
+    background: var(--gold);
+    color: black;
+
+    border-color: var(--gold);
+}
+
+.movies-page .movie-card-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding-top: 16px;
+}
+
+.movies-page .movie-card-info h3 {
+    margin: 0 0 6px;
+
+    color: white;
+
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.movies-page .movie-card-info p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 12px;
+}
+
+.movies-page .card-rating {
+    color: var(--gold);
+
+    white-space: nowrap;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   SPOTLIGHT
+========================================================= */
+
+.movies-page .spotlight {
+    min-height: 700px;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    padding:
+        100px
+        max(6vw, 30px);
+
+    isolation: isolate;
+}
+
+.movies-page .spotlight-background {
+    position: absolute;
+    inset: 0;
+
+    z-index: -3;
+
+    background:
+        url("https://image.tmdb.org/t/p/original/xJHokMbljvjADYdit5fK5VQsXEG.jpg")
+        center / cover no-repeat;
+}
+
+.movies-page .spotlight-shade {
+    position: absolute;
+    inset: 0;
+
+    z-index: -2;
+
+    background:
+        linear-gradient(
+            90deg,
+            #080808 0%,
+            rgba(8,8,8,.94) 30%,
+            rgba(8,8,8,.60) 53%,
+            rgba(8,8,8,.15) 100%
+        ),
+        linear-gradient(
+            0deg,
+            #080808 0%,
+            transparent 40%
+        );
+}
+
+.movies-page .spotlight-inner {
+    width: 100%;
+    max-width: 1500px;
+
+    margin: 0 auto;
+}
+
+.movies-page .spotlight-content {
+    width: min(640px, 100%);
+}
+
+.movies-page .spotlight-content h2 {
+    margin: 14px 0 25px;
+
+    font-size:
+        clamp(45px, 6vw, 82px);
+
+    line-height: .92;
+
+    letter-spacing: -4px;
+}
+
+.movies-page .spotlight-content h2 span {
+    color: var(--gold);
+}
+
+.movies-page .spotlight-description {
+    max-width: 530px;
+
+    color: #aaa;
+
+    line-height: 1.8;
+}
+
+.movies-page .spotlight-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+
+    margin: 35px 0;
+}
+
+.movies-page .spotlight-stats strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: white;
+
+    font-size: 30px;
+}
+
+.movies-page .spotlight-stats small {
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   ESSENTIAL VIEWING
+========================================================= */
+
+.movies-page .essential-section {
+    background: #0b0b0b;
+}
+
+.movies-page .essential-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0,1fr));
+
+    gap: 20px;
+}
+
+.movies-page .essential-card:nth-child(2),
+.movies-page .essential-card:nth-child(4) {
+    margin-top: 55px;
+}
+
+
+/* =========================================================
+   EDITORIAL QUOTE
+========================================================= */
+
+.movies-page .editorial-quote {
+    position: relative;
+
+    padding:
+        135px
+        max(6vw,30px);
+
+    text-align: center;
+
+    background: var(--cream);
+    color: #111;
+
+    overflow: hidden;
+}
+
+.movies-page .huge-quote {
+    position: absolute;
+
+    left: 50%;
+    top: -35px;
+
+    transform: translateX(-50%);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 250px;
+    line-height: 1;
+
+    color:
+        rgba(0,0,0,.045);
+}
+
+.movies-page .editorial-quote blockquote {
+    position: relative;
+
+    max-width: 900px;
+
+    margin: 0 auto 25px;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(32px, 5vw, 64px);
+
+    line-height: 1.12;
+
+    letter-spacing: -2px;
+}
+
+.movies-page .editorial-quote blockquote em {
+    color: #9a6d1f;
+}
+
+.movies-page .editorial-quote p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   WATCHLIST CTA
+========================================================= */
+
+.movies-page .watchlist-section {
+    padding:
+        100px
+        max(6vw,30px);
+
+    background: #080808;
+}
+
+.movies-page .watchlist-box {
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    padding: 70px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+
+    border:
+        1px solid var(--border);
+
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(213,168,77,.12),
+            transparent 30%
+        ),
+        #101010;
+}
+
+.movies-page .watchlist-box h2 {
+    margin: 12px 0 15px;
+
+    font-size:
+        clamp(38px,5vw,65px);
+
+    letter-spacing: -3px;
+    line-height: .95;
+}
+
+.movies-page .watchlist-box h2 span {
+    color: var(--gold);
+}
+
+.movies-page .watchlist-box p {
+    max-width: 580px;
+
+    margin: 0;
+
+    color: var(--muted);
+
+    line-height: 1.8;
+}
+
+.movies-page .watchlist-count {
+    min-width: 170px;
+
+    text-align: center;
+}
+
+.movies-page .watchlist-count strong {
+    display: block;
+
+    color: var(--gold);
+
+    font-size: 70px;
+    line-height: 1;
+}
+
+.movies-page .watchlist-count span {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #777;
+
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   EMPTY SEARCH
+========================================================= */
+
+.movies-page .empty-state {
+    display: none;
+
+    padding: 70px 20px;
+
+    text-align: center;
+
+    border: 1px solid var(--border);
+
+    color: #888;
+}
+
+.movies-page .empty-state h3 {
+    margin: 0 0 8px;
+
+    color: white;
+
+    font-size: 25px;
+}
+
+
+/* =========================================================
+   TRAILER MODAL
+========================================================= */
+
+.movies-page .trailer-modal {
+    position: fixed;
+    inset: 0;
+
+    z-index: 99999;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 25px;
+}
+
+.movies-page .trailer-modal.open {
+    display: flex;
+}
+
+.movies-page .trailer-backdrop {
+    position: absolute;
+    inset: 0;
+
+    background:
+        rgba(0,0,0,.94);
+
+    backdrop-filter: blur(8px);
+}
+
+.movies-page .trailer-dialog {
+    position: relative;
+
+    z-index: 2;
+
+    width: min(1050px,100%);
+
+    aspect-ratio: 16 / 9;
+
+    background: black;
+
+    box-shadow:
+        0 30px 100px
+        rgba(0,0,0,.7);
+}
+
+.movies-page .trailer-dialog iframe {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+}
+
+.movies-page .trailer-close {
+    position: absolute;
+
+    right: 0;
+    top: -52px;
+
+    width: 44px;
+    height: 44px;
+
+    border: 0;
+
+    background: transparent;
+    color: white;
+
+    font-size: 35px;
+}
+
+
+/* =========================================================
+   REVEAL ANIMATION
+========================================================= */
+
+.movies-page .reveal {
+    opacity: 0;
+
+    transform:
+        translateY(35px);
+
+    transition:
+        opacity .8s ease,
+        transform .8s ease;
+}
+
+.movies-page .reveal.visible {
+    opacity: 1;
+
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .movies-page .trending-track {
+        grid-auto-columns:
+            minmax(230px, 30%);
+    }
+
+    .movies-page .essential-grid {
+        grid-template-columns:
+            repeat(2, minmax(0,1fr));
+    }
+
+    .movies-page .essential-card:nth-child(2),
+    .movies-page .essential-card:nth-child(4) {
+        margin-top: 0;
+    }
+
+    .movies-page .discover-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .movies-page .filter-area {
+        flex-wrap: wrap;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .movies-page .cinema-hero {
+        min-height: 720px;
+    }
+
+    .movies-page .cinema-hero__inner {
+        padding:
+            90px
+            22px
+            70px;
+    }
+
+    .movies-page .cinema-hero__image {
+        background-position: 63% center;
+    }
+
+    .movies-page .cinema-hero__shade {
+        background:
+            linear-gradient(
+                90deg,
+                rgba(0,0,0,.90),
+                rgba(0,0,0,.42)
+            ),
+            linear-gradient(
+                0deg,
+                #080808 0%,
+                rgba(8,8,8,.60) 40%,
+                transparent
+            );
+    }
+
+    .movies-page .cinema-hero h1 {
+        font-size:
+            clamp(53px,17vw,82px);
+
+        letter-spacing: -4px;
+    }
+
+    .movies-page .hero-index {
+        display: none;
+    }
+
+    .movies-page .movie-section {
+        padding:
+            75px
+            22px;
+    }
+
+    .movies-page .section-heading {
+        display: block;
+    }
+
+    .movies-page .section-heading > p {
+        margin-top: 18px;
+    }
+
+    .movies-page .trending-heading-controls {
+        margin-top: 25px;
+    }
+
+    .movies-page .trending-track {
+        grid-auto-columns:
+            minmax(220px, 74%);
+    }
+
+    .movies-page .essential-grid {
+        grid-template-columns:
+            repeat(2, minmax(0,1fr));
+
+        gap: 13px;
+    }
+
+    .movies-page .movie-card-info {
+        display: block;
+    }
+
+    .movies-page .card-rating {
+        display: block;
+        margin-top: 7px;
+    }
+
+    .movies-page .movie-card-info h3 {
+        font-size: 14px;
+    }
+
+    .movies-page .spotlight {
+        min-height: 680px;
+
+        padding:
+            80px
+            22px;
+    }
+
+    .movies-page .spotlight-background {
+        background-position: 65% center;
+    }
+
+    .movies-page .spotlight-content h2 {
+        letter-spacing: -3px;
+    }
+
+    .movies-page .spotlight-stats {
+        gap: 22px;
+    }
+
+    .movies-page .editorial-quote {
+        padding:
+            100px
+            22px;
+    }
+
+    .movies-page .watchlist-section {
+        padding:
+            70px
+            22px;
+    }
+
+    .movies-page .watchlist-box {
+        padding: 40px 25px;
+
+        display: block;
+    }
+
+    .movies-page .watchlist-count {
+        margin-top: 40px;
+
+        text-align: left;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL SCREEN
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .movies-page .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .movies-page .primary-movie-btn,
+    .movies-page .secondary-movie-btn {
+        width: 100%;
+    }
+
+    .movies-page .essential-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .movies-page .rank-number {
+        font-size: 27px;
+    }
+}
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="movies-page">
+
+
+<!-- ======================================================
+     CINEMATIC HERO
+====================================================== -->
+
+<section class="cinema-hero">
+
+    <div class="cinema-hero__image"></div>
+    <div class="cinema-hero__shade"></div>
+    <div class="cinema-hero__bottom"></div>
+    <div class="cinema-hero__grain"></div>
+
+
+    <div class="cinema-hero__inner">
+
+        <div class="cinema-hero__content">
+
+            <div class="eyebrow">
+                Featured this week
+            </div>
+
+            <h1>
+                Stories worth
+                <span>getting lost in.</span>
+            </h1>
+
+            <p class="hero-copy">
+                Discover unforgettable films, modern masterpieces
+                and timeless stories selected for people who still
+                believe a great movie can stay with you long after
+                the credits disappear.
+            </p>
+
+
+            <div class="hero-meta">
+
+                <span class="hero-rating">
+                    ★ 8.7
+                </span>
+
+                <span class="meta-dot">
+                    2024
+                </span>
+
+                <span class="meta-dot">
+                    2h 46m
+                </span>
+
+                <span class="meta-dot">
+                    Sci-Fi
+                </span>
+
+            </div>
+
+
+            <div class="hero-actions">
+
+                <button
+                    class="primary-movie-btn trailer-trigger"
+                    data-trailer="https://www.youtube.com/embed/Way9Dexny3w"
+                >
+                    <span>▶</span>
+                    Watch Trailer
+                </button>
+
+                <button
+                    class="secondary-movie-btn hero-save"
+                >
+                    <span>＋</span>
+                    Add to My List
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="hero-index">
+
+        <strong>01</strong>
+
+        <div></div>
+
+        <span>
+            Editor's Pick
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     DISCOVER
+====================================================== -->
+
+<section class="movie-section discover-section">
+
+    <div class="section-inner">
+
+        <div class="section-heading reveal">
+
+            <div>
+
+                <span class="section-kicker">
+                    Explore the collection
+                </span>
+
+                <h2>
+                    Find your next<br>
+                    favourite.
+                </h2>
+
+            </div>
+
+            <p>
+                Search by title or narrow the collection by genre.
+                Every movie here has been selected to make browsing
+                feel less like scrolling and more like discovering.
+            </p>
+
+        </div>
+
+
+        <div class="discover-panel reveal">
+
+            <div class="movie-search">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                    ></circle>
+
+                    <path
+                        d="M20 20l-3.5-3.5"
+                    ></path>
+                </svg>
+
+                <input
+                    type="search"
+                    id="movieSearch"
+                    placeholder="Search for a movie..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="filter-area">
+
+                <button
+                    class="genre-button active"
+                    data-genre="all"
+                >
+                    All
+                </button>
+
+                <button
+                    class="genre-button"
+                    data-genre="sci-fi"
+                >
+                    Sci-Fi
+                </button>
+
+                <button
+                    class="genre-button"
+                    data-genre="drama"
+                >
+                    Drama
+                </button>
+
+                <button
+                    class="genre-button"
+                    data-genre="action"
+                >
+                    Action
+                </button>
+
+                <button
+                    class="genre-button"
+                    data-genre="thriller"
+                >
+                    Thriller
+                </button>
+
+                <button
+                    class="genre-button"
+                    data-genre="animation"
+                >
+                    Animation
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     TRENDING
+====================================================== -->
+
+<section class="movie-section trending-section">
+
+    <div class="section-inner">
+
+        <div class="section-heading reveal">
+
+            <div>
+
+                <span class="section-kicker">
+                    What people are watching
+                </span>
+
+                <h2>
+                    Trending now.
+                </h2>
+
+            </div>
+
+
+            <div class="trending-heading-controls">
+
+                <button
+                    class="slider-arrow"
+                    id="trendPrevious"
+                    aria-label="Previous movies"
+                >
+                    ←
+                </button>
+
+                <button
+                    class="slider-arrow"
+                    id="trendNext"
+                    aria-label="Next movies"
+                >
+                    →
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="trending-track"
+            id="trendingTrack"
+        >
+
+
+            <!-- 01 DUNE -->
+
+            <article
+                class="cinema-card movie-item reveal"
+                data-title="Dune Part Two"
+                data-genre="sci-fi"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg"
+                        alt="Dune Part Two"
+                    >
+
+                    <span class="rank-number">
+                        01
+                    </span>
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="Dune Part Two"
+                        aria-label="Save Dune Part Two"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/Way9Dexny3w"
+                        aria-label="Watch Dune Part Two trailer"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            Dune: Part Two
+                        </h3>
+
+                        <p>
+                            2024 · Sci-Fi
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 8.7
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- 02 OPPENHEIMER -->
+
+            <article
+                class="cinema-card movie-item reveal"
+                data-title="Oppenheimer"
+                data-genre="drama"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
+                        alt="Oppenheimer"
+                    >
+
+                    <span class="rank-number">
+                        02
+                    </span>
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="Oppenheimer"
+                        aria-label="Save Oppenheimer"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/uYPbbksJxIg"
+                        aria-label="Watch Oppenheimer trailer"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            Oppenheimer
+                        </h3>
+
+                        <p>
+                            2023 · Drama
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 8.6
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- 03 INTERSTELLAR -->
+
+            <article
+                class="cinema-card movie-item reveal"
+                data-title="Interstellar"
+                data-genre="sci-fi"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
+                        alt="Interstellar"
+                    >
+
+                    <span class="rank-number">
+                        03
+                    </span>
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="Interstellar"
+                        aria-label="Save Interstellar"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/zSWdZVtXT7E"
+                        aria-label="Watch Interstellar trailer"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            Interstellar
+                        </h3>
+
+                        <p>
+                            2014 · Sci-Fi
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 8.7
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- 04 BATMAN -->
+
+            <article
+                class="cinema-card movie-item reveal"
+                data-title="The Batman"
+                data-genre="action"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/74xTEgt7R36Fpooo50r9T25onhq.jpg"
+                        alt="The Batman"
+                    >
+
+                    <span class="rank-number">
+                        04
+                    </span>
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="The Batman"
+                        aria-label="Save The Batman"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/mqqft2x_Aa4"
+                        aria-label="Watch The Batman trailer"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            The Batman
+                        </h3>
+
+                        <p>
+                            2022 · Action
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 7.8
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- 05 SPIDER VERSE -->
+
+            <article
+                class="cinema-card movie-item reveal"
+                data-title="Spider-Man Across the Spider-Verse"
+                data-genre="animation"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg"
+                        alt="Spider-Man Across the Spider-Verse"
+                    >
+
+                    <span class="rank-number">
+                        05
+                    </span>
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="Spider-Man Across the Spider-Verse"
+                        aria-label="Save Spider-Man Across the Spider-Verse"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/cqGjhVJWtEg"
+                        aria-label="Watch Spider-Man trailer"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            Across the Spider-Verse
+                        </h3>
+
+                        <p>
+                            2023 · Animation
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 8.6
+                    </span>
+
+                </div>
+
+            </article>
+
+        </div>
+
+
+        <div
+            class="empty-state"
+            id="movieEmptyState"
+        >
+
+            <h3>
+                No movies found.
+            </h3>
+
+            <p>
+                Try another movie title or genre.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     SPOTLIGHT
+====================================================== -->
+
+<section class="spotlight">
+
+    <div class="spotlight-background"></div>
+    <div class="spotlight-shade"></div>
+
+
+    <div class="spotlight-inner">
+
+        <div class="spotlight-content reveal">
+
+            <span class="section-kicker">
+                Cinema spotlight
+            </span>
+
+
+            <h2>
+                Some films don't end
+                <span>
+                    when the credits roll.
+                </span>
+            </h2>
+
+
+            <p class="spotlight-description">
+                Christopher Nolan's Interstellar turns a journey
+                through space into something deeply human — a story
+                about time, sacrifice, survival and the people we
+                refuse to leave behind.
+            </p>
+
+
+            <div class="spotlight-stats">
+
+                <div>
+                    <strong>8.7</strong>
+                    <small>IMDb rating</small>
+                </div>
+
+                <div>
+                    <strong>169</strong>
+                    <small>Minutes</small>
+                </div>
+
+                <div>
+                    <strong>2014</strong>
+                    <small>Released</small>
+                </div>
+
+            </div>
+
+
+            <button
+                class="primary-movie-btn trailer-trigger"
+                data-trailer="https://www.youtube.com/embed/zSWdZVtXT7E"
+            >
+                ▶ Watch Trailer
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     ESSENTIAL VIEWING
+====================================================== -->
+
+<section class="movie-section essential-section">
+
+    <div class="section-inner">
+
+        <div class="section-heading reveal">
+
+            <div>
+
+                <span class="section-kicker">
+                    Handpicked for you
+                </span>
+
+                <h2>
+                    Essential<br>
+                    viewing.
+                </h2>
+
+            </div>
+
+            <p>
+                Different decades. Different genres. One thing
+                in common: these are stories worth experiencing.
+            </p>
+
+        </div>
+
+
+        <div class="essential-grid">
+
+
+            <!-- SHAWSHANK -->
+
+            <article
+                class="cinema-card essential-card movie-item reveal"
+                data-title="The Shawshank Redemption"
+                data-genre="drama"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg"
+                        alt="The Shawshank Redemption"
+                    >
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="The Shawshank Redemption"
+                        aria-label="Save The Shawshank Redemption"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/PLl99DlL6b4"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            The Shawshank Redemption
+                        </h3>
+
+                        <p>
+                            1994 · Drama
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 9.3
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- INCEPTION -->
+
+            <article
+                class="cinema-card essential-card movie-item reveal"
+                data-title="Inception"
+                data-genre="sci-fi"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg"
+                        alt="Inception"
+                    >
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="Inception"
+                        aria-label="Save Inception"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/YoHD9XEInc0"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            Inception
+                        </h3>
+
+                        <p>
+                            2010 · Sci-Fi
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 8.8
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- PARASITE -->
+
+            <article
+                class="cinema-card essential-card movie-item reveal"
+                data-title="Parasite"
+                data-genre="thriller"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg"
+                        alt="Parasite"
+                    >
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="Parasite"
+                        aria-label="Save Parasite"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/5xH0HfJHsaY"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            Parasite
+                        </h3>
+
+                        <p>
+                            2019 · Thriller
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 8.5
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- MAD MAX -->
+
+            <article
+                class="cinema-card essential-card movie-item reveal"
+                data-title="Mad Max Fury Road"
+                data-genre="action"
+            >
+
+                <div class="poster-wrap">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780/hA2ple9q4qnwxp3hKVNhroipsir.jpg"
+                        alt="Mad Max Fury Road"
+                    >
+
+
+                    <button
+                        class="save-movie"
+                        data-movie="Mad Max Fury Road"
+                        aria-label="Save Mad Max Fury Road"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="card-play trailer-trigger"
+                        data-trailer="https://www.youtube.com/embed/hEJnMQG9ev8"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="movie-card-info">
+
+                    <div>
+                        <h3>
+                            Mad Max: Fury Road
+                        </h3>
+
+                        <p>
+                            2015 · Action
+                        </p>
+                    </div>
+
+                    <span class="card-rating">
+                        ★ 8.1
+                    </span>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     EDITORIAL QUOTE
+====================================================== -->
+
+<section class="editorial-quote">
+
+    <span class="huge-quote">
+        “
+    </span>
+
+    <blockquote class="reveal">
+        Cinema is a matter of
+        <em>what's in the frame</em>
+        and what's out.
+    </blockquote>
+
+    <p class="reveal">
+        Martin Scorsese
+    </p>
+
+</section>
+
+
+<!-- ======================================================
+     WATCHLIST
+====================================================== -->
+
+<section class="watchlist-section">
+
+    <div class="watchlist-box reveal">
+
+        <div>
+
+            <span class="section-kicker">
+                Your collection
+            </span>
+
+            <h2>
+                Keep the stories
+                <span>worth remembering.</span>
+            </h2>
+
+            <p>
+                Use the + button on any movie to build your
+                personal Prime Media watchlist. Your selections
+                stay saved in this browser.
+            </p>
+
+        </div>
+
+
+        <div class="watchlist-count">
+
+            <strong id="watchlistCount">
+                0
+            </strong>
+
+            <span>
+                Saved movies
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     TRAILER MODAL
+====================================================== -->
+
+<div
+    class="trailer-modal"
+    id="trailerModal"
+    aria-hidden="true"
+>
+
+    <div
+        class="trailer-backdrop"
+        id="trailerBackdrop"
+    ></div>
+
+
+    <div class="trailer-dialog">
+
+        <button
+            class="trailer-close"
+            id="trailerClose"
+            aria-label="Close trailer"
+        >
+            ×
+        </button>
+
+
+        <iframe
+            id="trailerFrame"
+            src=""
+            title="Movie trailer"
+            allow="
+                autoplay;
+                encrypted-media;
+                picture-in-picture
+            "
+            allowfullscreen
+        ></iframe>
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const moviePage =
+        document.querySelector(".movies-page");
+
+    if (!moviePage) {
+        return;
+    }
+
+
+    /* =====================================================
+       TRAILER MODAL
+    ===================================================== */
+
+    const trailerModal =
+        document.getElementById("trailerModal");
+
+    const trailerFrame =
+        document.getElementById("trailerFrame");
+
+    const trailerClose =
+        document.getElementById("trailerClose");
+
+    const trailerBackdrop =
+        document.getElementById("trailerBackdrop");
+
+
+    const trailerButtons =
+        moviePage.querySelectorAll(
+            ".trailer-trigger"
+        );
+
+
+    trailerButtons.forEach(function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                const trailer =
+                    button.dataset.trailer;
+
+                if (!trailer) {
+                    return;
+                }
+
+                trailerFrame.src =
+                    trailer + "?autoplay=1";
+
+                trailerModal.classList.add(
+                    "open"
+                );
+
+                trailerModal.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+                document.body.style.overflow =
+                    "hidden";
+            }
+        );
+
+    });
+
+
+    function closeTrailer() {
+
+        trailerModal.classList.remove(
+            "open"
+        );
+
+        trailerModal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        trailerFrame.src = "";
+
+        document.body.style.overflow = "";
+    }
+
+
+    trailerClose.addEventListener(
+        "click",
+        closeTrailer
+    );
+
+
+    trailerBackdrop.addEventListener(
+        "click",
+        closeTrailer
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape") {
+                closeTrailer();
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       TRENDING SLIDER
+    ===================================================== */
+
+    const trendingTrack =
+        document.getElementById(
+            "trendingTrack"
+        );
+
+    const trendNext =
+        document.getElementById(
+            "trendNext"
+        );
+
+    const trendPrevious =
+        document.getElementById(
+            "trendPrevious"
+        );
+
+
+    trendNext.addEventListener(
+        "click",
+        function () {
+
+            trendingTrack.scrollBy({
+                left:
+                    trendingTrack.clientWidth
+                    * 0.75,
+
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+
+    trendPrevious.addEventListener(
+        "click",
+        function () {
+
+            trendingTrack.scrollBy({
+                left:
+                    -trendingTrack.clientWidth
+                    * 0.75,
+
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+
+    /* =====================================================
+       SEARCH + GENRE FILTER
+    ===================================================== */
+
+    const movieSearch =
+        document.getElementById(
+            "movieSearch"
+        );
+
+
+    const genreButtons =
+        moviePage.querySelectorAll(
+            ".genre-button"
+        );
+
+
+    const movieItems =
+        Array.from(
+            moviePage.querySelectorAll(
+                ".movie-item"
+            )
+        );
+
+
+    const emptyState =
+        document.getElementById(
+            "movieEmptyState"
+        );
+
+
+    let activeGenre = "all";
+
+
+    function filterMovies() {
+
+        const searchText =
+            movieSearch.value
+                .trim()
+                .toLowerCase();
+
+
+        let visibleMovies = 0;
+
+
+        movieItems.forEach(
+            function (movie) {
+
+                const movieTitle =
+                    movie.dataset.title
+                        .toLowerCase();
+
+
+                const movieGenre =
+                    movie.dataset.genre;
+
+
+                const matchesSearch =
+                    movieTitle.includes(
+                        searchText
+                    );
+
+
+                const matchesGenre =
+                    activeGenre === "all"
+                    ||
+                    movieGenre ===
+                    activeGenre;
+
+
+                if (
+                    matchesSearch
+                    &&
+                    matchesGenre
+                ) {
+
+                    movie.style.display = "";
+
+                    visibleMovies++;
+
+                } else {
+
+                    movie.style.display =
+                        "none";
+                }
+
+            }
+        );
+
+
+        emptyState.style.display =
+            visibleMovies === 0
+            ? "block"
+            : "none";
+    }
+
+
+    movieSearch.addEventListener(
+        "input",
+        filterMovies
+    );
+
+
+    genreButtons.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    genreButtons.forEach(
+                        function (item) {
+
+                            item.classList.remove(
+                                "active"
+                            );
+
+                        }
+                    );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    activeGenre =
+                        button.dataset.genre;
+
+
+                    filterMovies();
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       WATCHLIST
+    ===================================================== */
+
+    const saveButtons =
+        moviePage.querySelectorAll(
+            ".save-movie"
+        );
+
+
+    const watchlistCount =
+        document.getElementById(
+            "watchlistCount"
+        );
+
+
+    let savedMovies = [];
+
+
+    try {
+
+        savedMovies =
+            JSON.parse(
+                localStorage.getItem(
+                    "primeMediaMovies"
+                )
+            ) || [];
+
+    } catch (error) {
+
+        savedMovies = [];
+    }
+
+
+    function updateWatchlist() {
+
+        watchlistCount.textContent =
+            savedMovies.length;
+
+
+        saveButtons.forEach(
+            function (button) {
+
+                const movieName =
+                    button.dataset.movie;
+
+
+                if (
+                    savedMovies.includes(
+                        movieName
+                    )
+                ) {
+
+                    button.classList.add(
+                        "saved"
+                    );
+
+                    button.textContent =
+                        "✓";
+
+                } else {
+
+                    button.classList.remove(
+                        "saved"
+                    );
+
+                    button.textContent =
+                        "+";
+                }
+
+            }
+        );
+
+
+        localStorage.setItem(
+            "primeMediaMovies",
+            JSON.stringify(
+                savedMovies
+            )
+        );
+    }
+
+
+    saveButtons.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const movieName =
+                        button.dataset.movie;
+
+
+                    if (
+                        savedMovies.includes(
+                            movieName
+                        )
+                    ) {
+
+                        savedMovies =
+                            savedMovies.filter(
+                                function (movie) {
+
+                                    return movie
+                                        !== movieName;
+                                }
+                            );
+
+                    } else {
+
+                        savedMovies.push(
+                            movieName
+                        );
+                    }
+
+
+                    updateWatchlist();
+                }
+            );
+
+        }
+    );
+
+
+    updateWatchlist();
+
+
+    /* =====================================================
+       HERO WATCHLIST BUTTON
+    ===================================================== */
+
+    const heroSave =
+        moviePage.querySelector(
+            ".hero-save"
+        );
+
+
+    if (heroSave) {
+
+        heroSave.addEventListener(
+            "click",
+            function () {
+
+                const movieName =
+                    "Dune Part Two";
+
+
+                if (
+                    !savedMovies.includes(
+                        movieName
+                    )
+                ) {
+
+                    savedMovies.push(
+                        movieName
+                    );
+
+                    updateWatchlist();
+                }
+
+
+                heroSave.innerHTML =
+                    "<span>✓</span> Added to My List";
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       SCROLL REVEAL
+    ===================================================== */
+
+    const revealItems =
+        moviePage.querySelectorAll(
+            ".reveal"
+        );
+
+
+    if (
+        "IntersectionObserver"
+        in window
+    ) {
+
+        const observer =
+            new IntersectionObserver(
+                function (entries) {
+
+                    entries.forEach(
+                        function (entry) {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target
+                                    .classList
+                                    .add(
+                                        "visible"
+                                    );
+
+                                observer.unobserve(
+                                    entry.target
+                                );
+                            }
+
+                        }
+                    );
+
+                },
+                {
+                    threshold: 0.12
+                }
+            );
+
+
+        revealItems.forEach(
+            function (item) {
+
+                observer.observe(item);
+
+            }
+        );
+
+    } else {
+
+        revealItems.forEach(
+            function (item) {
+
+                item.classList.add(
+                    "visible"
+                );
+
+            }
+        );
+    }
+
+});
+</script>
+
+{% endblock %}
