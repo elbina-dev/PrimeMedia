@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Prime Media—Books{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename= 'css/books.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="books-section">
+
+    <a
+        class="feature-card"
+        href="https://dn790002.ca.archive.org/0/items/mastery-by-robert-greene/Mastery%20by%20Robert%20Greene.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+
+        <div class="book-cover-container">
+
+            <img
+                src="https://books.google.com/books/content?id=8auMEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl"
+                alt="Cover of Mastery by Robert Greene"
+                class="book-cover"
+            >
+
+        </div>
+
+        <div class="book-info">
+            <h2>MASTERY</h2>
+            <p>by Robert Greene</p>
+        </div>
+
+    </a>
+
+</section>
+
+<section class="books-section">
+
+    <a
+        class="feature-card"
+        href="https://www.gutenberg.org/ebooks/2680.html.images"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Read Meditations by Marcus Aurelius"
+    >
+
+        <!-- Book Cover -->
+        <div class="book-cover-container">
+            <img
+                src="https://www.gutenberg.org/cache/epub/2680/pg2680.cover.medium.jpg"
+                alt="Cover of Meditations by Marcus Aurelius"
+                class="book-cover"
+                loading="lazy"
+            >
+        </div>
+
+        <!-- Book Information -->
+        <div class="book-info">
+            <h2>MEDITATIONS</h2>
+            <p>by Marcus Aurelius</p>
+        </div>
+
+    </a>
+
+</section>
+
+
+
+{% endblock %}

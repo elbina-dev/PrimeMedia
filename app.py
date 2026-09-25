@@ -20,6 +20,16 @@ def home():
 def courses():
     """Prime page — a simple route for demonstration."""
     return render_template("primecourses.html")
+@app.route("/books")
+def books():
+    return render_template("books.html")
+
+
+@app.route("/contact", methods=["GET"])
+def contact():
+    """Contact page."""
+    return render_template("contact.html")
+
 
 if __name__ == "__main__":
     app.run(
