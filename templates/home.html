@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Prime Media — Home{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <h1>Everything Great, In One Place</h1>
+    <p>
+        Movies, songs, books, and courses — Prime Media brings the media you
+        love and the skills you want under one roof.
+    </p>
+    <a class="btn" href="/courses">Explore Courses</a>
+</section>
+
+<section class="features">
+
+    <a class="feature-card" href="/movies">
+        <div class="feature-icon">🎬</div>
+        <h2>Movies</h2>
+        <p>Stream trending titles and timeless classics.</p>
+    </a>
+
+    <a class="feature-card" href="/songs">
+        <div class="feature-icon">🎵</div>
+        <h2>Songs</h2>
+        <p>Curated playlists for every mood and moment.</p>
+    </a>
+
+    <a class="feature-card" href="/books">
+        <div class="feature-icon">📚</div>
+        <h2>Books</h2>
+        <p>Dive into stories and ideas from every genre.</p>
+    </a>
+
+    <a class="feature-card" href="/courses">
+        <div class="feature-icon">🎓</div>
+        <h2>Courses</h2>
+        <p>Learn new skills with hands-on, guided lessons.</p>
+    </a>
+
+</section>
+
+<section class="cta">
+    <h2>New here?</h2>
+    <p>Get in touch and we'll help you find your first pick.</p>
+    <a class="btn btn-outline" href="/contact">Contact Us</a>
+</section>
+
+{% endblock %}
