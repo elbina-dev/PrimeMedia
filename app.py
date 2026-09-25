@@ -16,6 +16,10 @@ def home():
     """Home page — already built as the example for students to follow."""
     return render_template("home.html")
 
+@app.route("/books")
+def books():
+    return render_template("books.html")
+
 
 @app.route("/contact", methods=["GET"])
 def contact():
