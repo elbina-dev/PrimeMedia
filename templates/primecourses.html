@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Prime Media—Prime Courses{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+
+ 
+
+<section class="hero">
+    <h1>Learn Skills That Actually Move You Forward </h1>
+    <p>
+       Prime Courses help you develop in-demand skills and advance your career
+       It brings together practical , expert-designed lessons across tech, business,
+       and creative fields - so you can build real skills at a pace that works for you.
+    </p>
+    <a class="btn" href="/courses">Explore Courses</a>
+</section>
+
+<section class="features">
+
+    <a class="feature-card" href="/Web Development">
+        <div class="feature-icon">📚</div>
+        <h2>Web Development</h2>
+        <p>Web Development Fundamentals (HTML, CSS, JavaScript).
+            Summary: A beginner-friendly course teaching the building blocks of the modern web.
+             Students learn: semantic HTML structure, responsive CSS layouts (Flexbox/Grid), DOM manipulation, and basic JavaScript logic to build interactive websites.
+        </p>
+        
+    </a>
+
+    <a class="feature-card" href="/Full-Stack Web Development ">
+        <div class="feature-icon">📚</div>
+        <h2>Full-Stack Web Development (Python/Django or Node.js)</h2>
+        <p>Summary: Takes learners from front-end basics to building complete, database-backed web applications.
+           Students learn: server-side routing, databases (SQL), REST APIs, authentication, templating engines, and deploying a full working app end-to-end.</p>
+    </a>
+
+    <a class="feature-card" href="/Cybersecurity fundamental">
+        <div class="feature-icon">📚</div>
+        <h2>Cybersecurity Fundamentals</h2>
+        <p>Summary: Covers essential security concepts for protecting systems and data.
+           Students learn: common threats, network security basics, encryption, and safe coding practice.</p>
+    </a>
+
+    <a class="feature-card" href="/courses">
+        <div class="feature-icon">📚</div>
+        <h2>Mobile App Development (Flutter or React Native)</h2>
+        <p>Summary: Teaches cross-platform app development from a single codebase.
+           Students learn: UI design for mobile, state management, API integration, and publishing apps to app stores..</p>
+    </a>
+
+</section>
+
+<section class="cta">
+    <h2>New here?</h2>
+    <p>Get in touch and we'll help you find your first pick.</p>
+    <a class="btn btn-outline" href="/contact">Contact Us</a>
+</section>
+
+
+
+
+
+{% endblock %}

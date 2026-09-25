@@ -16,6 +16,10 @@ def home():
     """Home page — already built as the example for students to follow."""
     return render_template("home.html")
 
+@app.route("/courses", methods=["GET"])
+def courses():
+    """Prime page — a simple route for demonstration."""
+    return render_template("primecourses.html")
 
 if __name__ == "__main__":
     app.run(
