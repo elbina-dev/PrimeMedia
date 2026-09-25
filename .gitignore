@@ -1,0 +1,10 @@
+__pycache__/
+*.pyo
+*.pyd
+venv/
+env/
+.venv/
+instance/
+.flaskenv
+.env
+.vscode/
